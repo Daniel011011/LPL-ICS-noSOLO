@@ -13,7 +13,6 @@
 
 订阅地址 
 
-代理地址
 
 https://cdn.jsdelivr.net/gh/Daniel011011/LPL-ICS-noSOLO/calendar.ics
 
