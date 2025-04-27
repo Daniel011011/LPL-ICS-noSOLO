@@ -38,13 +38,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          if [ ! -f calendar.ics ]; then
-            echo "Error: calendar.ics 未生成"
+          if [ ! -f calendarIOS.ics ]; then
+            echo "Error: calendarIOS.ics 未生成"
             exit 1
           fi
 
-          git add calendar.ics
+          git add calendarIOS.ics
           
           # 始终提交，不管是否有变更
-          git commit -m "自动更新 calendar.ics" || echo "没有变更，跳过提交"
+          git commit -m "自动更新 calendar.ics" || (git commit --amend --no-edit --date "$(date)" && echo "没有变更，跳过新提交")
           git push
