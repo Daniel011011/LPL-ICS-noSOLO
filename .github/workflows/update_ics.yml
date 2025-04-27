@@ -1,17 +1,23 @@
-name: 定期更新 ICS
+
+# ① 显式开启写入权限
+permissions:
+  contents: write
 
 on:
   schedule:
-    # 每天 0 点拉取一次，cron 表达式为 UTC 时间
     - cron: '0 0 * * *'
-  workflow_dispatch:   # 支持手动触发
+  workflow_dispatch:
 
 jobs:
   update-ics:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout 仓库
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -24,13 +30,27 @@ jobs:
 
       - name: 拉取并处理 ICS
         env:
-          ICS_URL: https://cdn.jsdelivr.net/gh/TankNee/LOL_Game_Subscription/2025_lpl/2025_lpl.ics   # ← 改成你的订阅 URL
+            ICS_URL: https://cdn.jsdelivr.net/gh/TankNee/LOL_Game_Subscription/2025_lpl/2025_lpl.ics   # ← 改成你的订阅 URL
         run: |
           python scripts/fetch_and_process_ics.py
+          # 调试：确认文件实际生成了
+          ls -al calendar.ics
+          head -10 calendar.ics
 
       - name: 提交并推送更新
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if [ ! -f calendar.ics ]; then
+            echo "Error: calendar.ics 未生成"
+            exit 1
+          fi
+
           git add calendar.ics
-          git diff --quiet || (git commit -m "自动更新 calendar.ics" && git push)
+          if git diff --cached --quiet; then
+            echo "无变更，跳过提交"
+          else
+            git commit -m "自动更新 calendar.ics"
+            git push
+          fi
