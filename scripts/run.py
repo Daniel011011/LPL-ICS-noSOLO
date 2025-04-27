@@ -19,6 +19,8 @@ ICS_URL = "https://cdn.jsdelivr.net/gh/TankNee/LOL_Game_Subscription/2025_lpl/20
 OUTPUT_FILE = "calendar.ics"
 # 过滤所有包含 “SOLO选边” 的事件
 FILTER_KEYWORD = "SOLO选边"
+# 事件 URL 统一替换为 B 站直播协议
+EVENT_URL = "bilibili://live/6"
 # =================
 
 
@@ -51,9 +53,13 @@ def main():
     for curr, nxt in zip(events, events[1:]):
         end_curr = curr.get('DTEND').dt
         start_next = nxt.get('DTSTART').dt
-        # 若结束晚于下一个开始，则将结束时间设为下一个开始
         if end_curr > start_next:
             curr['DTEND'].dt = start_next
+
+    # 替换所有事件的 URL
+    for comp in cal.subcomponents:
+        if getattr(comp, 'name', None) == 'VEVENT':
+            comp['URL'] = EVENT_URL
 
     # 写回新的 ICS
     try:
