@@ -12,6 +12,7 @@ fetch_and_process_ics.py
 
 import requests
 from icalendar import Calendar
+from datetime import datetime
 
 # === 配置区域 ===
 ICS_URL = "https://cdn.jsdelivr.net/gh/TankNee/LOL_Game_Subscription/2025_lpl/2025_lpl.ics"
@@ -33,13 +34,26 @@ def main():
     # 解析为 Calendar 对象
     cal = Calendar.from_ical(resp.content)
 
-    # 遍历并删除不需要的 VEVENT
-    # 注意：使用 subcomponents 直接操作，保持原始日历结构
+    # 收集并过滤 VEVENT
+    events = []
     for comp in list(cal.subcomponents):
         if getattr(comp, 'name', None) == 'VEVENT':
-            desc = comp.get('DESCRIPTION', '')
-            if FILTER_KEYWORD in str(desc):
+            desc = str(comp.get('DESCRIPTION', ''))
+            if FILTER_KEYWORD in desc:
                 cal.subcomponents.remove(comp)
+            else:
+                events.append(comp)
+
+    # 按 DTSTART 排序
+    events.sort(key=lambda e: e.get('DTSTART').dt)
+
+    # 调整时长，避免重叠，可让结束时间等于下一个开始时间
+    for curr, nxt in zip(events, events[1:]):
+        end_curr = curr.get('DTEND').dt
+        start_next = nxt.get('DTSTART').dt
+        # 若结束晚于下一个开始，则将结束时间设为下一个开始
+        if end_curr > start_next:
+            curr['DTEND'].dt = start_next
 
     # 写回新的 ICS
     try:
