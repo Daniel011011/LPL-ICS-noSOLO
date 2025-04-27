@@ -1,17 +1,19 @@
+# 定期调度并运行 scripts/run.py
+name: 定期更新日历
 
-# ① 显式开启写入权限
+# 赋予写权限以便提交改动
 permissions:
   contents: write
 
 on:
   schedule:
+    # UTC 每天 0 点运行一次
     - cron: '0 0 * * *'
-  workflow_dispatch:
+  workflow_dispatch:  # 支持手动触发
 
 jobs:
   update-ics:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout 仓库
         uses: actions/checkout@v3
@@ -28,20 +30,15 @@ jobs:
         run: |
           pip install requests icalendar
 
-      - name: 拉取并处理 ICS
-        env:
-            ICS_URL: https://cdn.jsdelivr.net/gh/TankNee/LOL_Game_Subscription/2025_lpl/2025_lpl.ics   # ← 改成你的订阅 URL
+      - name: 运行脚本
         run: |
-          python scripts/fetch_and_process_ics.py
-          # 调试：确认文件实际生成了
-          ls -al calendar.ics
-          head -10 calendar.ics
+          python scripts/run.py
 
       - name: 提交并推送更新
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
+          
           if [ ! -f calendar.ics ]; then
             echo "Error: calendar.ics 未生成"
             exit 1

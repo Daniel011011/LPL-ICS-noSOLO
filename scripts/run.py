@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+fetch_and_process_ics.py
+
+直接运行：
+    python fetch_and_process_ics.py
+
+依赖：
+    pip install requests icalendar
+"""
+
+import requests
+from icalendar import Calendar
+
+# === 配置区域 ===
+ICS_URL = "https://cdn.jsdelivr.net/gh/TankNee/LOL_Game_Subscription/2025_lpl/2025_lpl.ics"
+OUTPUT_FILE = "calendar.ics"
+# 过滤所有包含 “SOLO选边” 的事件
+FILTER_KEYWORD = "SOLO选边"
+# =================
+
+
+def main():
+    # 下载 ICS
+    try:
+        resp = requests.get(ICS_URL, timeout=10)
+        resp.raise_for_status()
+    except Exception as e:
+        print(f"ERROR: 无法拉取 ICS → {e}")
+        return
+
+    # 解析为 Calendar 对象
+    cal = Calendar.from_ical(resp.content)
+
+    # 遍历并删除不需要的 VEVENT
+    # 注意：使用 subcomponents 直接操作，保持原始日历结构
+    for comp in list(cal.subcomponents):
+        if getattr(comp, 'name', None) == 'VEVENT':
+            desc = comp.get('DESCRIPTION', '')
+            if FILTER_KEYWORD in str(desc):
+                cal.subcomponents.remove(comp)
+
+    # 写回新的 ICS
+    try:
+        with open(OUTPUT_FILE, 'wb') as f:
+            f.write(cal.to_ical())
+        print(f"✅ 已生成并保存：{OUTPUT_FILE}")
+    except Exception as e:
+        print(f"ERROR: 无法写入文件 → {e}")
+
+
+if __name__ == '__main__':
+    main()
