@@ -7,8 +7,6 @@
 - 🧹 **删除** SOLO 相关日程
 - 🕒 **缩短** 游戏时长，避免日程重叠
 - 🔗 **更改** 原有 URL 为 **iOS 版 bilibili URL（URLshame）**
-- 📝 **将 SOLO 战果** 添加到日程备注中
-- 🔧 **Fork** TankNee 的仓库，自行修改或提交 PR
 
 ## 📋 TODO 列表
 
@@ -18,7 +16,7 @@
 
 ## 📅 订阅地址
 
-支持B站直播的 URL shame的版本
+支持B站直播的 IOS URL shame的版本
 
 **JsDelivr 加速订阅**
 
