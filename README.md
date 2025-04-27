@@ -13,8 +13,9 @@
 
 订阅地址 
 
+代理地址
 
-https://cdn.jsdelivr.net/gh/Daniel011011/LPL-ICS-npSOLO/calendar.ics
+https://cdn.jsdelivr.net/gh/Daniel011011/LPL-ICS-noSOLO/calendar.ics
 
 
-https://raw.githubusercontent.com/Daniel011011/LPL-ICS-npSOLO/refs/heads/main/calendar.ics
+https://raw.githubusercontent.com/Daniel011011/LPL-ICS-noSOLO/refs/heads/main/calendar.ics
