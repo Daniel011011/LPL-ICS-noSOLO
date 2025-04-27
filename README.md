@@ -6,7 +6,9 @@
 
 1 删除SOLO相关日程
 
-2 缩短游戏时长使得日程不重叠（todo）
+2 缩短游戏时长使得日程不重叠
+
+3 更改原有URL为 iOS 的 bilibili URLshame（稍后添加一个版本为网址的版本todo）
 
 3 将SOLO战果添加到日程备注中（todo）
 
