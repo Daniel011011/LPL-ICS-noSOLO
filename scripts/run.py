@@ -16,7 +16,7 @@ from datetime import datetime
 
 # === 配置区域 ===
 ICS_URL = "https://cdn.jsdelivr.net/gh/TankNee/LOL_Game_Subscription/2025_lpl/2025_lpl.ics"
-OUTPUT_FILE = "calendar.ics"
+OUTPUT_FILE = "calendarIOS.ics"
 # 过滤所有包含 “SOLO选边” 的事件
 FILTER_KEYWORD = "SOLO选边"
 # 事件 URL 统一替换为 B 站直播协议
