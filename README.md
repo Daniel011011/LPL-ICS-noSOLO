@@ -5,7 +5,7 @@
 定时获取 [TankNee/LOL_Game_Subscription](https://github.com/TankNee/LOL_Game_Subscription) 的 2025 年 LPL 订阅地址，并进行以下修改：
 
 - 🧹 **删除** SOLO 相关日程
-- 🕒 **缩短** 游戏时长，避免日程重叠
+- 🕒 **缩短** 日程时长，避免日程重叠
 - 🔗 **更改** 原有 URL 为 **iOS 版 bilibili URL（URLshame）**
 
 ## 📋 TODO 列表
