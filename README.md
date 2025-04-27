@@ -12,7 +12,7 @@
 
 4 将SOLO战果添加到日程备注中（todo）
 
-5 fork TankNee 自己修改或者提交修改
+5 fork TankNee 的库自己修改或者提交修改
 
 ## 订阅地址 
 
