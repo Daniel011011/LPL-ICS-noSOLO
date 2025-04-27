@@ -10,10 +10,11 @@
 
 3 更改原有URL为 iOS 的 bilibili URLshame（稍后添加一个版本为网址的版本todo）
 
-3 将SOLO战果添加到日程备注中（todo）
+4 将SOLO战果添加到日程备注中（todo）
 
+5 fork TankNee 自己修改或者提交修改
 
-订阅地址 
+## 订阅地址 
 
 
 https://cdn.jsdelivr.net/gh/Daniel011011/LPL-ICS-noSOLO/calendar.ics
