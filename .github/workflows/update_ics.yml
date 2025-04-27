@@ -1,0 +1,36 @@
+name: 定期更新 ICS
+
+on:
+  schedule:
+    # 每天 0 点拉取一次，cron 表达式为 UTC 时间
+    - cron: '0 0 * * *'
+  workflow_dispatch:   # 支持手动触发
+
+jobs:
+  update-ics:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 仓库
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: 安装依赖
+        run: |
+          pip install requests icalendar
+
+      - name: 拉取并处理 ICS
+        env:
+          ICS_URL: https://cdn.jsdelivr.net/gh/TankNee/LOL_Game_Subscription/2025_lpl/2025_lpl.ics   # ← 改成你的订阅 URL
+        run: |
+          python scripts/fetch_and_process_ics.py
+
+      - name: 提交并推送更新
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add calendar.ics
+          git diff --quiet || (git commit -m "自动更新 calendar.ics" && git push)
