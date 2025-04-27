@@ -19,11 +19,13 @@
 
 ## 📅 订阅地址
 
+支持B站直播的 URL shame的版本
+
 **JsDelivr 加速订阅**
 
-``` https://cdn.jsdelivr.net/gh/Daniel011011/LPL-ICS-noSOLO/calendar.ics ```
+``` https://cdn.jsdelivr.net/gh/Daniel011011/LPL-ICS-noSOLO/calendarIOS.ics ```
 
 **GitHub 原始订阅**
 
-``` https://raw.githubusercontent.com/Daniel011011/LPL-ICS-noSOLO/refs/heads/main/calendar.ics ```
+``` https://raw.githubusercontent.com/Daniel011011/LPL-ICS-noSOLO/refs/heads/main/calendarIOS.ics ```
 
