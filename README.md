@@ -1,5 +1,6 @@
 # LPL-ICS-npSOLO
 
+临时使用的 LPL 日历 isc 自定义化修改
 
 定时获取 https://github.com/TankNee/LOL_Game_Subscription 的2025年LPL订阅地址 并且添加修改
 
