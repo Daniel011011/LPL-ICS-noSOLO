@@ -1,14 +1,12 @@
 name: 定期更新日历
 
-# 赋予写权限以便提交改动
 permissions:
   contents: write
 
 on:
   schedule:
-    # UTC 每天 0 点运行一次
     - cron: '0 0 * * *'
-  workflow_dispatch:  # 支持手动触发
+  workflow_dispatch:
 
 jobs:
   update-ics:
@@ -19,6 +17,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           persist-credentials: true
+          fetch-depth: 0  # 拉取完整历史，解决 push 被拒问题
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -37,14 +36,14 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           if [ ! -f calendarIOS.ics ]; then
             echo "Error: calendarIOS.ics 未生成"
             exit 1
           fi
 
           git add calendarIOS.ics
-          
-          # 始终提交，不管是否有变更
+
           git commit -m "自动更新 calendar.ics" || (git commit --amend --no-edit --date "$(date)" && echo "没有变更，跳过新提交")
+          
           git push
