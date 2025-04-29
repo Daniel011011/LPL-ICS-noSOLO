@@ -1,5 +1,6 @@
 name: 定期更新日历
-
+permissions:
+  contents: write
 on:
   schedule:
     - cron: '0 0 * * *'
