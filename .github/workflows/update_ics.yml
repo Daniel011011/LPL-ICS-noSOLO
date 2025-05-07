@@ -30,11 +30,16 @@ jobs:
       - name: 运行脚本
         run: python scripts/run.py
 
-      - name: 同步远程分支并变基
+      - name: 同步远程分支并处理未暂存更改
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          # 1. 暂存所有更改（包括未跟踪文件）
+          git stash push --include-untracked -m "ci-autostash"
+          # 2. 变基拉取远端最新 main
           git pull --rebase origin main
+          # 3. 恢复之前的更改
+          git stash pop || echo "No stash to apply"
 
       - name: 提交并推送更新
         run: |
@@ -45,4 +50,5 @@ jobs:
           git add calendarIOS.ics
           git commit -m "自动更新 calendar.ics" || \
             (git commit --amend --no-edit --date "$(date --utc)" && echo "没有变更，跳过新提交")
+          # 安全强制推送，确保不会覆盖他人更新
           git push --force-with-lease
