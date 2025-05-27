@@ -18,6 +18,12 @@
 
 支持B站直播的 IOS URL shame的版本
 
+**Gitee 加速订阅**
+
+```
+https://gitee.com/wangyiding011011/LPL-ICS-noSOLO/raw/main/calendarIOS.ics
+```
+
 **JsDelivr 加速订阅**
 
 ```
