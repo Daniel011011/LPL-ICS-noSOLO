@@ -23,16 +23,18 @@
 ```
 https://gitee.com/wangyiding011011/LPL-ICS-noSOLO/raw/main/calendarIOS.ics
 ```
-
+Gitee 同步最快 推荐使用
 **JsDelivr 加速订阅**
 
 ```
 https://cdn.jsdelivr.net/gh/Daniel011011/LPL-ICS-noSOLO/calendarIOS.ics
 ```
-JsDeliver同步速度稍慢
+
+
+
 **GitHub 原始订阅**
 
 ```
 https://raw.githubusercontent.com/Daniel011011/LPL-ICS-noSOLO/refs/heads/main/calendarIOS.ics
 ```
-github原始订阅对网络有要求
+对网络有要求
