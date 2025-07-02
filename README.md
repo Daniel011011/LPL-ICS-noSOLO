@@ -39,10 +39,5 @@ https://raw.githubusercontent.com/Daniel011011/LPL-ICS-noSOLO/refs/heads/main/ca
 ```
 
 
-
-**在线查看日历**
-
-```
-https://daniel011011.github.io/LPL-ICS-noSOLO/
-```
+**[在线查看日历](https://daniel011011.github.io/LPL-ICS-noSOLO/)**
 
