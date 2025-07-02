@@ -37,4 +37,12 @@ https://cdn.jsdelivr.net/gh/Daniel011011/LPL-ICS-noSOLO/calendarIOS.ics
 ```
 https://raw.githubusercontent.com/Daniel011011/LPL-ICS-noSOLO/refs/heads/main/calendarIOS.ics
 ```
-对网络有要求
+
+
+
+**在线查看日历**
+
+```
+[https://raw.githubusercontent.com/Daniel011011/LPL-ICS-noSOLO/refs/heads/main/calendarIOS.ics](https://daniel011011.github.io/LPL-ICS-noSOLO/)
+```
+
