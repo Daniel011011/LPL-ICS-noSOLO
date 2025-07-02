@@ -43,6 +43,6 @@ https://raw.githubusercontent.com/Daniel011011/LPL-ICS-noSOLO/refs/heads/main/ca
 **在线查看日历**
 
 ```
-[https://raw.githubusercontent.com/Daniel011011/LPL-ICS-noSOLO/refs/heads/main/calendarIOS.ics](https://daniel011011.github.io/LPL-ICS-noSOLO/)
+https://daniel011011.github.io/LPL-ICS-noSOLO/
 ```
 
