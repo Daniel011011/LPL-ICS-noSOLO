@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>英雄联盟比赛日历</title>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.global.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.4.0/ical.min.js"></script>
+  <style>
+    body { margin: 40px; font-family: Arial, sans-serif; }
+    #calendar { max-width: 900px; margin: 0 auto; }
+  </style>
+</head>
+<body>
+  <h2>⚔️ 英雄联盟比赛日历</h2>
+  <div id="calendar"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log("初始化英雄联盟比赛日历...");
+      const calendarEl = document.getElementById('calendar');
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',   // 默认周视图，也可改为 dayGridMonth、listWeek
+        locale: 'zh-cn',               // 中文日期
+        slotLabelFormat: {             // 24小时制时间格式
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        },
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,listWeek'
+        },
+      });
+      calendar.render();
+
+      const icsFiles = ['calendarIOS.ics'];  // 这里改成你的英雄联盟比赛日历ics文件名
+
+      icsFiles.forEach(file => {
+        fetch(file)
+          .then(response => response.text())
+          .then(data => {
+            console.log(`ICS 文件 ${file} 已获取，开始解析...`);
+            const jcalData = ICAL.parse(data);
+            const comp = new ICAL.Component(jcalData);
+            const vevents = comp.getAllSubcomponents('vevent');
+            const events = vevents.map(vevent => {
+              const e = new ICAL.Event(vevent);
+              return {
+                title: e.summary,
+                start: e.startDate.toJSDate(),
+                end: e.endDate ? e.endDate.toJSDate() : e.startDate.toJSDate(),
+                description: e.description
+              };
+            });
+            console.log(`从 ${file} 解析得到 ${events.length} 个比赛事件`);
+            calendar.addEventSource(events);
+          })
+          .catch(err => console.error(`获取或解析 ${file} 失败:`, err));
+      });
+    });
+  </script>
+</body>
+</html>
