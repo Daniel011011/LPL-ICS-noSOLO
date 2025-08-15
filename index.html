@@ -2,15 +2,26 @@
 <html lang="zh">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>英雄联盟比赛日历</title>
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.global.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.4.0/ical.min.js"></script>
   <style>
-    body { margin: 40px; font-family: Arial, sans-serif; }
-    #calendar { max-width: 900px; margin: 0 auto; }
+    body { 
+      margin: 10px; 
+      font-family: Arial, sans-serif; 
+      background: #f8f9fa;
+    }
+    #calendar { 
+      max-width: 100%; 
+      margin: 0 auto; 
+    }
+    h2 {
+      font-size: 1.2em;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -21,10 +32,14 @@
     document.addEventListener('DOMContentLoaded', function() {
       console.log("初始化英雄联盟比赛日历...");
       const calendarEl = document.getElementById('calendar');
+
+      // 根据屏幕宽度选择默认视图
+      const defaultView = window.innerWidth < 768 ? 'listWeek' : 'timeGridWeek';
+
       const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'timeGridWeek',   // 默认周视图，也可改为 dayGridMonth、listWeek
-        locale: 'zh-cn',               // 中文日期
-        slotLabelFormat: {             // 24小时制时间格式
+        initialView: defaultView,
+        locale: 'zh-cn',
+        slotLabelFormat: {
           hour: '2-digit',
           minute: '2-digit',
           hour12: false
@@ -32,12 +47,14 @@
         headerToolbar: {
           left: 'prev,next today',
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek,listWeek'
+          right: 'dayGridMonth,timeGridWeek,listWeek,timeGridDay'
         },
+        height: 'auto', // 让日历高度自适应
       });
+
       calendar.render();
 
-      const icsFiles = ['calendarIOS.ics'];  // 这里改成你的英雄联盟比赛日历ics文件名
+      const icsFiles = ['calendarIOS.ics'];
 
       icsFiles.forEach(file => {
         fetch(file)
