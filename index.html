@@ -9,10 +9,53 @@
   <script src="https://unpkg.com/fullcalendar@6.1.8/locales-all.global.min.js"></script>
   <script src="https://unpkg.com/ical.js@1.4.0/build/ical.min.js"></script>
   <style>
+    @media (orientation: landscape) {
+      body {
+        margin: 0 40px;
+      }
+      .fc-header-toolbar {
+        flex-direction: row !important; /* 横屏时正常横排 */
+        flex-wrap: nowrap !important;
+      }
+    }
+    @media (orientation: portrait) {
+      body {
+        margin: 0;
+      }
+      .fc-header-toolbar {
+        flex-direction: column !important; /* 竖屏时三行 */
+        align-items: center;
+      }
+      .fc-toolbar-chunk {
+        width: 100%;
+        text-align: center;
+        margin: 5px 0;
+      }
+    }
     body { 
-      margin: 10px; 
       font-family: Arial, sans-serif; 
       background: #f8f9fa;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .nav-buttons,
+    h2,
+    #calendar {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .nav-buttons {
+      order: 1;
+      padding: 10px 0;
+    }
+    h2 {
+      order: 2;
+      margin: 15px 0;
+    }
+    #calendar {
+      order: 3;
+      flex-grow: 1;
     }
     #calendar { 
       max-width: 100%; 
