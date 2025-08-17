@@ -9,21 +9,34 @@
   <script src="https://unpkg.com/fullcalendar@6.1.8/locales-all.global.min.js"></script>
   <script src="https://unpkg.com/ical.js@1.4.0/build/ical.min.js"></script>
   <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      background: #f8f9fa;
+      margin: 0;
+      min-height: 100vh;
+    }
+    
+    /* 横屏时：内容居中显示，宽度 60% */
     @media (orientation: landscape) {
-      body {
-        margin: 0 40px;
+      .content-wrapper {
+        width: 60%;
+        max-width: 1200px;
+        margin: 0 auto;  /* ✅ 用 margin: auto 水平居中 */
       }
       .fc-header-toolbar {
-        flex-direction: row !important; /* 横屏时正常横排 */
+        flex-direction: row !important;
         flex-wrap: nowrap !important;
       }
     }
+    
+    /* 竖屏时：全屏展示 */
     @media (orientation: portrait) {
-      body {
+      .content-wrapper {
+        width: 100%;
         margin: 0;
       }
       .fc-header-toolbar {
-        flex-direction: column !important; /* 竖屏时三行 */
+        flex-direction: column !important;
         align-items: center;
       }
       .fc-toolbar-chunk {
@@ -31,13 +44,6 @@
         text-align: center;
         margin: 5px 0;
       }
-    }
-    body { 
-      font-family: Arial, sans-serif; 
-      background: #f8f9fa;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
     }
     .nav-buttons,
     h2,
@@ -105,12 +111,14 @@
   </style>
 </head>
 <body>
-  <div class="nav-buttons">
-    <a href="./">LPL 日历</a>
-    <a href="./LCK/">LCK 日历</a>
-  </div>
-  <h2>⚔️ 英雄联盟 LPL 比赛日历</h2>
-  <div id="calendar"></div>
+    <div class="content-wrapper">
+      <div class="nav-buttons">
+        <a href="./">LPL 日历</a>
+        <a href="./LCK/">LCK 日历</a>
+      </div>
+      <h2>⚔️ 英雄联盟 LPL 比赛日历</h2>
+      <div id="calendar"></div>
+    </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
