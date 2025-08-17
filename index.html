@@ -38,6 +38,27 @@
     .nav-buttons a:hover {
       background-color: #0056b3;
     }
+    /* 今天日程的样式 */
+    .fc-list-event-dot[data-date-today] {
+      background-color: #28a745 !important;
+    }
+    .fc-list-event[data-date-today] {
+      background-color: rgba(40, 167, 69, 0.1) !important;
+    }
+    /* 昨天日程的样式 */
+    .fc-list-event-dot[data-date-yesterday] {
+      background-color: #6c757d !important;
+    }
+    .fc-list-event[data-date-yesterday] {
+      background-color: rgba(108, 117, 125, 0.1) !important;
+    }
+    /* 明天日程的样式 */
+    .fc-list-event-dot[data-date-tomorrow] {
+      background-color: #17a2b8 !important;
+    }
+    .fc-list-event[data-date-tomorrow] {
+      background-color: rgba(23, 162, 184, 0.1) !important;
+    }
   </style>
 </head>
 <body>
@@ -53,11 +74,9 @@
       console.log("初始化英雄联盟比赛日历...");
       const calendarEl = document.getElementById('calendar');
 
-      // 根据屏幕宽度选择默认视图
-      const defaultView = window.innerWidth < 768 ? 'listWeek' : 'timeGridWeek';
-
+      // 设置默认视图为 list
       const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: defaultView,
+        initialView: 'listWeek',
         locale: 'zh-cn',
         slotLabelFormat: {
           hour: '2-digit',
@@ -70,6 +89,75 @@
           right: 'dayGridMonth,timeGridWeek,listWeek,timeGridDay'
         },
         height: 'auto', // 让日历高度自适应
+        duration: { days: 8 }, // 显示8天的内容（包括今天）
+        visibleRange: function(currentDate) {
+          // 设置可见范围为过去一天到未来七天
+          return {
+            start: new Date(currentDate.getTime() - 24 * 60 * 60 * 1000), // 昨天
+            end: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000)  // 7天后
+          };
+        },
+        // 自定义日期格式化
+        dayHeaderContent: function(arg) {
+          const today = new Date();
+          const date = arg.date;
+          let text = arg.text;
+          
+          // 检查是否是今天、昨天或明天
+          const isToday = date.getDate() === today.getDate() &&
+                         date.getMonth() === today.getMonth() &&
+                         date.getFullYear() === today.getFullYear();
+          
+          const yesterday = new Date(today);
+          yesterday.setDate(yesterday.getDate() - 1);
+          const isYesterday = date.getDate() === yesterday.getDate() &&
+                             date.getMonth() === yesterday.getMonth() &&
+                             date.getFullYear() === yesterday.getFullYear();
+          
+          const tomorrow = new Date(today);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          const isTomorrow = date.getDate() === tomorrow.getDate() &&
+                            date.getMonth() === tomorrow.getMonth() &&
+                            date.getFullYear() === tomorrow.getFullYear();
+          
+          if (isToday) {
+            text += ' [今天]';
+          } else if (isYesterday) {
+            text += ' [昨天]';
+          } else if (isTomorrow) {
+            text += ' [明天]';
+          }
+          
+          return {
+            html: text
+          };
+        },
+        // 为事件元素添加数据属性
+        eventDidMount: function(arg) {
+          const eventDate = arg.event.start;
+          const today = new Date();
+          const yesterday = new Date(today);
+          yesterday.setDate(yesterday.getDate() - 1);
+          const tomorrow = new Date(today);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          
+          // 检查事件日期并添加相应的数据属性
+          if (eventDate.getDate() === today.getDate() &&
+              eventDate.getMonth() === today.getMonth() &&
+              eventDate.getFullYear() === today.getFullYear()) {
+            arg.el.setAttribute('data-date-today', '');
+          } else if (eventDate.getDate() === yesterday.getDate() &&
+                     eventDate.getMonth() === yesterday.getMonth() &&
+                     eventDate.getFullYear() === yesterday.getFullYear()) {
+            arg.el.setAttribute('data-date-yesterday', '');
+          } else if (eventDate.getDate() === tomorrow.getDate() &&
+                     eventDate.getMonth() === tomorrow.getMonth() &&
+                     eventDate.getFullYear() === tomorrow.getFullYear()) {
+            arg.el.setAttribute('data-date-tomorrow', '');
+          }
+          
+          return arg.el;
+        }
       });
 
       calendar.render();
@@ -86,12 +174,38 @@
             const vevents = comp.getAllSubcomponents('vevent');
             const events = vevents.map(vevent => {
               const e = new ICAL.Event(vevent);
-              return {
+              const startDate = e.startDate.toJSDate();
+              
+              // 添加数据属性用于样式区分
+              const today = new Date();
+              const yesterday = new Date(today);
+              yesterday.setDate(yesterday.getDate() - 1);
+              const tomorrow = new Date(today);
+              tomorrow.setDate(tomorrow.getDate() + 1);
+              
+              let eventData = {
                 title: e.summary,
-                start: e.startDate.toJSDate(),
-                end: e.endDate ? e.endDate.toJSDate() : e.startDate.toJSDate(),
+                start: startDate,
+                end: e.endDate ? e.endDate.toJSDate() : startDate,
                 description: e.description
               };
+              
+              // 检查事件日期并添加相应的数据属性
+              if (startDate.getDate() === today.getDate() &&
+                  startDate.getMonth() === today.getMonth() &&
+                  startDate.getFullYear() === today.getFullYear()) {
+                eventData.extendedProps = { 'data-date': 'today' };
+              } else if (startDate.getDate() === yesterday.getDate() &&
+                         startDate.getMonth() === yesterday.getMonth() &&
+                         startDate.getFullYear() === yesterday.getFullYear()) {
+                eventData.extendedProps = { 'data-date': 'yesterday' };
+              } else if (startDate.getDate() === tomorrow.getDate() &&
+                         startDate.getMonth() === tomorrow.getMonth() &&
+                         startDate.getFullYear() === tomorrow.getFullYear()) {
+                eventData.extendedProps = { 'data-date': 'tomorrow' };
+              }
+              
+              return eventData;
             });
             console.log(`从 ${file} 解析得到 ${events.length} 个比赛事件`);
             calendar.addEventSource(events);
