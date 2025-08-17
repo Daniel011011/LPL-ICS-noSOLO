@@ -15,93 +15,93 @@
       margin: 0;
       min-height: 100vh;
     }
-    
-    /* 横屏时：内容居中显示，宽度 60% */
+
+    /* 内容整体容器 */
+    .content-wrapper {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 15px;
+      margin: 10px auto;
+    }
+
+    /* 横屏时：内容宽度 60% 居中 */
     @media (orientation: landscape) {
       .content-wrapper {
         width: 60%;
-        max-width: 1200px;
-        margin: 0 auto;  /* ✅ 用 margin: auto 水平居中 */
+        max-width: 1200px; 
       }
-      .fc-header-toolbar {
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
+      .header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: nowrap;
+      }
+      .nav-buttons {
+        display: flex;
+        gap: 10px;
       }
     }
-    
-    /* 竖屏时：全屏展示 */
+
+    /* 竖屏时：按钮堆叠，标题居中 */
     @media (orientation: portrait) {
       .content-wrapper {
         width: 100%;
         margin: 0;
+        border-radius: 0;
+        box-shadow: none;
       }
-      .fc-header-toolbar {
-        flex-direction: column !important;
+      .header-bar {
+        display: flex;
+        flex-direction: column;
         align-items: center;
+        gap: 8px;
       }
-      .fc-toolbar-chunk {
-        width: 100%;
-        text-align: center;
-        margin: 5px 0;
+      .nav-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
       }
     }
-    .nav-buttons,
-    h2,
-    #calendar {
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .nav-buttons {
-      order: 1;
-      padding: 10px 0;
-    }
+
     h2 {
-      order: 2;
-      margin: 15px 0;
-    }
-    #calendar {
-      order: 3;
-      flex-grow: 1;
-    }
-    #calendar { 
-      max-width: 100%; 
-      margin: 0 auto; 
-    }
-    h2 {
-      font-size: 1.2em;
+      margin: 0;
+      font-size: 1.4em;
       text-align: center;
+      color: #333;
     }
-    .nav-buttons {
-      text-align: center;
-      margin: 10px 0;
-    }
+
     .nav-buttons a {
       display: inline-block;
-      padding: 10px 20px;
-      margin: 5px;
+      padding: 8px 16px;
       background-color: #007bff;
       color: white;
       text-decoration: none;
-      border-radius: 5px;
+      border-radius: 8px;
+      transition: background 0.2s;
     }
     .nav-buttons a:hover {
       background-color: #0056b3;
     }
-    /* 今天日程的样式 */
+
+    #calendar {
+      margin-top: 15px;
+    }
+
+    /* 今天/昨天/明天样式 */
     .fc-list-event-dot[data-date-today] {
       background-color: #28a745 !important;
     }
     .fc-list-event[data-date-today] {
       background-color: rgba(40, 167, 69, 0.1) !important;
     }
-    /* 昨天日程的样式 */
     .fc-list-event-dot[data-date-yesterday] {
       background-color: #6c757d !important;
     }
     .fc-list-event[data-date-yesterday] {
       background-color: rgba(108, 117, 125, 0.1) !important;
     }
-    /* 明天日程的样式 */
     .fc-list-event-dot[data-date-tomorrow] {
       background-color: #17a2b8 !important;
     }
@@ -111,39 +111,39 @@
   </style>
 </head>
 <body>
-    <div class="content-wrapper">
+  <div class="content-wrapper">
+    <div class="header-bar">
       <div class="nav-buttons">
         <a href="./">LPL 日历</a>
         <a href="./LCK/">LCK 日历</a>
       </div>
-      <h2>⚔️ 英雄联盟 LPL 比赛日历</h2>
-      <div id="calendar"></div>
+      <h2>⚔️ 英雄联盟比赛日历</h2>
     </div>
+    <div id="calendar"></div>
+  </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      console.log("初始化英雄联盟比赛日历...");
       const calendarEl = document.getElementById('calendar');
 
       const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'list7',
         locale: 'zh-cn',
-        initialDate: new Date(),   // 全局保持今天
+        initialDate: new Date(),
         headerToolbar: {
           left: 'prev,next today',
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,listWeek,timeGridDay,list7'
         },
-        // 切换视图时自动调整日期
         viewDidMount: function(arg) {
           const today = new Date();
           const yesterday = new Date(today);
           yesterday.setDate(today.getDate() - 1);
 
           if (arg.view.type === 'list7') {
-            calendar.gotoDate(yesterday); // 只在list7回到昨天
+            calendar.gotoDate(yesterday);
           } else {
-            calendar.gotoDate(today); // 其他视图强制回到今天
+            calendar.gotoDate(today);
           }
         },
         slotLabelFormat: {
@@ -151,33 +151,15 @@
           minute: '2-digit',
           hour12: false
         },
-        headerToolbar: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,listWeek,timeGridDay,list7'
-        },
-        height: 'auto', // 自适应高度
+        height: 'auto',
         views: {
-          list7: {
-            type: 'list',
-            duration: { days: 7 },
-            buttonText: '最近7天'
-          },
-          dayGridMonth: { 
-            buttonText: '月'
-          },
-          timeGridWeek: { 
-            buttonText: '周'
-          },
-          listWeek: { 
-            buttonText: '列表周'
-          },
-          timeGridDay: { 
-            buttonText: '日'
-          }
+          list7: { type: 'list', duration: { days: 7 }, buttonText: '最近7天' },
+          dayGridMonth: { buttonText: '月' },
+          timeGridWeek: { buttonText: '周' },
+          listWeek: { buttonText: '列表周' },
+          timeGridDay: { buttonText: '日' }
         },
         visibleRange: function(currentDate) {
-          // 昨天到未来6天，一共7天
           const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 1);
           const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 6);
           return { start: startDate, end: endDate };
@@ -189,13 +171,9 @@
           let text = arg.text;
           const timeDiff = headerDate.getTime() - todayDate.getTime();
           const daysDiff = Math.round(timeDiff / (1000 * 60 * 60 * 24));
-          if (daysDiff === 0) {
-            text += ' [今天]';
-          } else if (daysDiff === -1) {
-            text += ' [昨天]';
-          } else if (daysDiff === 1) {
-            text += ' [明天]';
-          }
+          if (daysDiff === 0) text += ' [今天]';
+          else if (daysDiff === -1) text += ' [昨天]';
+          else if (daysDiff === 1) text += ' [明天]';
           return { html: text };
         },
         eventDidMount: function(arg) {
@@ -205,14 +183,9 @@
           const eventDateOnly = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
           const timeDiff = eventDateOnly.getTime() - todayDate.getTime();
           const daysDiff = Math.round(timeDiff / (1000 * 60 * 60 * 24));
-          if (daysDiff === 0) {
-            arg.el.setAttribute('data-date-today', '');
-          } else if (daysDiff === -1) {
-            arg.el.setAttribute('data-date-yesterday', '');
-          } else if (daysDiff === 1) {
-            arg.el.setAttribute('data-date-tomorrow', '');
-          }
-          return arg.el;
+          if (daysDiff === 0) arg.el.setAttribute('data-date-today', '');
+          else if (daysDiff === -1) arg.el.setAttribute('data-date-yesterday', '');
+          else if (daysDiff === 1) arg.el.setAttribute('data-date-tomorrow', '');
         }
       });
 
@@ -223,7 +196,6 @@
         fetch(file)
           .then(response => response.text())
           .then(data => {
-            console.log(`ICS 文件 ${file} 已获取，开始解析...`);
             const jcalData = ICAL.parse(data);
             const comp = new ICAL.Component(jcalData);
             const vevents = comp.getAllSubcomponents('vevent');
@@ -250,7 +222,6 @@
               }
               return eventData;
             });
-            console.log(`从 ${file} 解析得到 ${events.length} 个比赛事件`);
             calendar.addEventSource(events);
           })
           .catch(err => console.error(`获取或解析 ${file} 失败:`, err));
