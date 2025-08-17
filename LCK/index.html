@@ -4,10 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>英雄联盟 LCK 比赛日历</title>
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.global.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.4.0/ical.min.js"></script>
+  <link href="https://unpkg.com/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script src="https://unpkg.com/fullcalendar@6.1.8/locales-all.global.min.js"></script>
+  <script src="https://unpkg.com/ical.js@1.4.0/build/ical.min.js"></script>
   <style>
     body { 
       margin: 10px; 
@@ -74,9 +74,15 @@
       console.log("初始化英雄联盟 LCK 比赛日历...");
       const calendarEl = document.getElementById('calendar');
 
-      // 设置默认视图为 list
+      // 设置默认视图为 list3 (昨天、今天、明天)
       const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'listWeek',
+        initialView: 'list3',
+        initialDate: (function() {
+          const today = new Date();
+          const yesterday = new Date(today);
+          yesterday.setDate(today.getDate() - 1);
+          return yesterday;
+        })(),
         locale: 'zh-cn',
         slotLabelFormat: {
           hour: '2-digit',
@@ -86,45 +92,60 @@
         headerToolbar: {
           left: 'prev,next today',
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek,listWeek,timeGridDay'
+          right: 'dayGridMonth,timeGridWeek,listWeek,timeGridDay,list8'
         },
         height: 'auto', // 让日历高度自适应
-        duration: { days: 8 }, // 显示8天的内容（包括今天）
+        views: {
+          list3: {
+            type: 'list',
+            duration: { days: 3 },
+            buttonText: '最近3天'
+          },
+          list8: {
+            type: 'list',
+            duration: { days: 7 },
+            buttonText: '最近7天'
+          },
+          dayGridMonth: {
+            buttonText: '月'
+          },
+          timeGridWeek: {
+            buttonText: '周'
+          },
+          listWeek: {
+            buttonText: '列表周'
+          },
+          timeGridDay: {
+            buttonText: '日'
+          }
+        },
         visibleRange: function(currentDate) {
-          // 设置可见范围为过去一天到未来七天
+          // 设置可见范围为前天到今天，总共3天
+          // 使用更明确的日期处理方式
+          const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 2);
+          const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1);
           return {
-            start: new Date(currentDate.getTime() - 24 * 60 * 60 * 1000), // 昨天
-            end: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000)  // 7天后
+            start: startDate,
+            end: endDate
           };
         },
         // 自定义日期格式化
         dayHeaderContent: function(arg) {
           const today = new Date();
-          const date = arg.date;
+          // 获取日期部分进行比较，避免时区问题
+          const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+          const headerDate = new Date(arg.date.getFullYear(), arg.date.getMonth(), arg.date.getDate());
           let text = arg.text;
           
-          // 检查是否是今天、昨天或明天
-          const isToday = date.getDate() === today.getDate() &&
-                         date.getMonth() === today.getMonth() &&
-                         date.getFullYear() === today.getFullYear();
+          // 计算日期差值（以天为单位）
+          const timeDiff = headerDate.getTime() - todayDate.getTime();
+          const daysDiff = Math.round(timeDiff / (1000 * 60 * 60 * 24));
           
-          const yesterday = new Date(today);
-          yesterday.setDate(yesterday.getDate() - 1);
-          const isYesterday = date.getDate() === yesterday.getDate() &&
-                             date.getMonth() === yesterday.getMonth() &&
-                             date.getFullYear() === yesterday.getFullYear();
-          
-          const tomorrow = new Date(today);
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          const isTomorrow = date.getDate() === tomorrow.getDate() &&
-                            date.getMonth() === tomorrow.getMonth() &&
-                            date.getFullYear() === tomorrow.getFullYear();
-          
-          if (isToday) {
+          if (daysDiff === 0) {
             text += ' [今天]';
-          } else if (isYesterday) {
+          } else if (daysDiff === -1) {
             text += ' [昨天]';
-          } else if (isTomorrow) {
+          } else if (daysDiff === 1) {
             text += ' [明天]';
           }
           
@@ -134,30 +155,29 @@
         },
         // 为事件元素添加数据属性
         eventDidMount: function(arg) {
-          const eventDate = arg.event.start;
+          const eventDate = new Date(arg.event.start);
           const today = new Date();
-          const yesterday = new Date(today);
-          yesterday.setDate(yesterday.getDate() - 1);
-          const tomorrow = new Date(today);
-          tomorrow.setDate(tomorrow.getDate() + 1);
+          
+          // 获取日期部分进行比较，避免时区问题
+          const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+          const eventDateOnly = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+          
+          // 计算日期差值（以天为单位）
+          const timeDiff = eventDateOnly.getTime() - todayDate.getTime();
+          const daysDiff = Math.round(timeDiff / (1000 * 60 * 60 * 24));
           
           // 检查事件日期并添加相应的数据属性
-          if (eventDate.getDate() === today.getDate() &&
-              eventDate.getMonth() === today.getMonth() &&
-              eventDate.getFullYear() === today.getFullYear()) {
+          if (daysDiff === 0) {
             arg.el.setAttribute('data-date-today', '');
-          } else if (eventDate.getDate() === yesterday.getDate() &&
-                     eventDate.getMonth() === yesterday.getMonth() &&
-                     eventDate.getFullYear() === yesterday.getFullYear()) {
+          } else if (daysDiff === -1) {
             arg.el.setAttribute('data-date-yesterday', '');
-          } else if (eventDate.getDate() === tomorrow.getDate() &&
-                     eventDate.getMonth() === tomorrow.getMonth() &&
-                     eventDate.getFullYear() === tomorrow.getFullYear()) {
+          } else if (daysDiff === 1) {
             arg.el.setAttribute('data-date-tomorrow', '');
           }
           
           return arg.el;
         }
+
       });
 
       calendar.render();
