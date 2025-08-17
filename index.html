@@ -75,14 +75,26 @@
       const calendarEl = document.getElementById('calendar');
 
       const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'list7', // 默认显示7天
-        initialDate: (function() {
+        initialView: 'list7',
+        locale: 'zh-cn',
+        initialDate: new Date(),   // 全局保持今天
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,listWeek,timeGridDay,list7'
+        },
+        // 切换视图时自动调整日期
+        viewDidMount: function(arg) {
           const today = new Date();
           const yesterday = new Date(today);
           yesterday.setDate(today.getDate() - 1);
-          return yesterday;
-        })(),
-        locale: 'zh-cn',
+
+          if (arg.view.type === 'list7') {
+            calendar.gotoDate(yesterday); // 只在list7回到昨天
+          } else {
+            calendar.gotoDate(today); // 其他视图强制回到今天
+          }
+        },
         slotLabelFormat: {
           hour: '2-digit',
           minute: '2-digit',
@@ -100,10 +112,18 @@
             duration: { days: 7 },
             buttonText: '最近7天'
           },
-          dayGridMonth: { buttonText: '月' },
-          timeGridWeek: { buttonText: '周' },
-          listWeek: { buttonText: '列表周' },
-          timeGridDay: { buttonText: '日' }
+          dayGridMonth: { 
+            buttonText: '月'
+          },
+          timeGridWeek: { 
+            buttonText: '周'
+          },
+          listWeek: { 
+            buttonText: '列表周'
+          },
+          timeGridDay: { 
+            buttonText: '日'
+          }
         },
         visibleRange: function(currentDate) {
           // 昨天到未来6天，一共7天

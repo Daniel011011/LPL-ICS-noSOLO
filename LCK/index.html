@@ -74,16 +74,28 @@
       console.log("初始化英雄联盟 LCK 比赛日历...");
       const calendarEl = document.getElementById('calendar');
 
-      // 设置默认视图为 list3 (昨天、今天、明天)
+      // 设置默认视图为 list7 (最近7天)
       const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'list3',
-        initialDate: (function() {
+        initialView: 'list7',
+        locale: 'zh-cn',
+        initialDate: new Date(),   // 全局保持今天
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,listWeek,timeGridDay,list7'
+        },
+        // 切换视图时自动调整日期
+        viewDidMount: function(arg) {
           const today = new Date();
           const yesterday = new Date(today);
           yesterday.setDate(today.getDate() - 1);
-          return yesterday;
-        })(),
-        locale: 'zh-cn',
+
+          if (arg.view.type === 'list7') {
+            calendar.gotoDate(yesterday);
+          } else {
+            calendar.gotoDate(today);
+          }
+        },
         slotLabelFormat: {
           hour: '2-digit',
           minute: '2-digit',
@@ -92,16 +104,11 @@
         headerToolbar: {
           left: 'prev,next today',
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek,listWeek,timeGridDay,list8'
+          right: 'dayGridMonth,timeGridWeek,listWeek,timeGridDay,list7'
         },
         height: 'auto', // 让日历高度自适应
         views: {
-          list3: {
-            type: 'list',
-            duration: { days: 3 },
-            buttonText: '最近3天'
-          },
-          list8: {
+          list7: {
             type: 'list',
             duration: { days: 7 },
             buttonText: '最近7天'
@@ -120,14 +127,10 @@
           }
         },
         visibleRange: function(currentDate) {
-          // 设置可见范围为前天到今天，总共3天
-          // 使用更明确的日期处理方式
-          const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 2);
-          const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1);
-          return {
-            start: startDate,
-            end: endDate
-          };
+          // 昨天到未来6天，一共7天
+          const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 1);
+          const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 6);
+          return { start: startDate, end: endDate };
         },
         // 自定义日期格式化
         dayHeaderContent: function(arg) {
