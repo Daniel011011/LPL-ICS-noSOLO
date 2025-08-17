@@ -20,9 +20,12 @@ ICS_URLS = [
     "https://raw.githubusercontent.com/TankNee/LOL_Game_Subscription/refs/heads/master/2025_msi/2025_msi.ics",
     # 以后你只需要在这里继续添加 ICS 链接
 ]
+LCK_ICS_URL = "https://raw.githubusercontent.com/ChengLuffy/lpl.ics/refs/heads/master/LCK2025.ics"
 OUTPUT_FILE = "calendarIOS.ics"
+LCK_OUTPUT_FILE = "calendarIOS-LCK.ics"
 FILTER_KEYWORD = "SOLO选边"
 EVENT_URL = "bilibili://live/6"
+LCK_EVENT_URL = "bilibili://live/6"
 # =================
 
 
@@ -37,14 +40,15 @@ def fetch_ics(url):
         return None
 
 
-def main():
+def process_calendar(urls, output_file, event_url):
+    """处理日历并保存到指定文件"""
     merged_cal = Calendar()
     merged_cal.add('prodid', '-//Merged ICS Calendar//')
     merged_cal.add('version', '2.0')
 
     all_events = []
 
-    for url in ICS_URLS:
+    for url in urls:
         cal = fetch_ics(url)
         if cal is None:
             continue
@@ -69,16 +73,41 @@ def main():
 
     # 统一替换事件 URL，并加入到合并日历
     for event in all_events:
-        event['URL'] = EVENT_URL
+        event['URL'] = event_url
         merged_cal.add_component(event)
 
     # 写回文件
     try:
-        with open(OUTPUT_FILE, 'wb') as f:
+        with open(output_file, 'wb') as f:
             f.write(merged_cal.to_ical())
-        print(f"✅ 已合并并保存：{OUTPUT_FILE}")
+        print(f"✅ 已合并并保存：{output_file}")
     except Exception as e:
         print(f"ERROR: 无法写入文件 → {e}")
+
+def main():
+    # 处理 LPL 日历
+    process_calendar(ICS_URLS, OUTPUT_FILE, EVENT_URL)
+    
+    # 处理 LCK 日历
+    lck_cal = fetch_ics(LCK_ICS_URL)
+    if lck_cal is not None:
+        merged_lck_cal = Calendar()
+        merged_lck_cal.add('prodid', '-//Merged ICS Calendar//')
+        merged_lck_cal.add('version', '2.0')
+        
+        # 收集 LCK VEVENT
+        for comp in list(lck_cal.subcomponents):
+            if getattr(comp, 'name', None) == 'VEVENT':
+                # LCK 日历不需要过滤 SOLO 选边
+                merged_lck_cal.add_component(comp)
+        
+        # 写回 LCK 文件
+        try:
+            with open(LCK_OUTPUT_FILE, 'wb') as f:
+                f.write(merged_lck_cal.to_ical())
+            print(f"✅ 已合并并保存：{LCK_OUTPUT_FILE}")
+        except Exception as e:
+            print(f"ERROR: 无法写入文件 → {e}")
 
 
 if __name__ == '__main__':

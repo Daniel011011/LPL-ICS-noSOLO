@@ -47,8 +47,12 @@ jobs:
             echo "Error: calendarIOS.ics 未生成"
             exit 1
           fi
-          git add calendarIOS.ics
-          git commit -m "自动更新 calendar.ics" || \
+          if [ ! -f calendarIOS-LCK.ics ]; then
+            echo "Error: calendarIOS-LCK.ics 未生成"
+            exit 1
+          fi
+          git add calendarIOS.ics calendarIOS-LCK.ics
+          git commit -m "自动更新 calendar.ics 和 calendar-LCK.ics" || \
             (git commit --amend --no-edit --date "$(date --utc)" && echo "没有变更，跳过新提交")
           # 安全强制推送，确保不会覆盖他人更新
           git push --force-with-lease
