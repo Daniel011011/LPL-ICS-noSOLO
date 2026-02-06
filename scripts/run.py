@@ -18,7 +18,7 @@ from datetime import datetime
 ICS_URLS = [
     "https://raw.githubusercontent.com/TankNee/LOL_Game_Subscription/refs/heads/master/2025_lpl/2025_lpl.ics",
     "https://raw.githubusercontent.com/TankNee/LOL_Game_Subscription/refs/heads/master/2025_msi/2025_msi.ics",
-    "https://raw.githubusercontent.com/TankNee/LOL_Game_Subscription/refs/heads/master/2025_lpl/2026_lpl.ics",
+    "https://raw.githubusercontent.com/TankNee/LOL_Game_Subscription/refs/heads/master/2026_lpl/2026_lpl.ics",
     # 以后你只需要在这里继续添加 ICS 链接
 ]
 LCK_ICS_URL = "https://raw.githubusercontent.com/ChengLuffy/lpl.ics/refs/heads/master/LCK2025.ics"
